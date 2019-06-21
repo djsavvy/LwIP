@@ -45,3 +45,8 @@
 /contrib/ports/win32/mingw/*.map
 /contrib/ports/win32/mingw/cov-int
 /contrib/ports/win32/msvc/.vs
+
+/contrib/apps/tcpecho/build
+tags
+/contrib/ports/unix/lib/lwipopts.h.gch
+/contrib/ports/unix/example_app/test.bin
