@@ -44,7 +44,7 @@
 #define LWIP_NETCONN               (NO_SYS==0)
 #define LWIP_NETIF_API             (NO_SYS==0)
 
-#define LWIP_IGMP                  LWIP_IPV4
+#define LWIP_IGMP                  0
 #define LWIP_ICMP                  LWIP_IPV4
 
 #define LWIP_SNMP                  LWIP_UDP
