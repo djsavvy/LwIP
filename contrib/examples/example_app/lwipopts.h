@@ -32,6 +32,20 @@
 #ifndef LWIP_LWIPOPTS_H
 #define LWIP_LWIPOPTS_H
 
+
+#define LWIP_CHECKSUM_CTRL_PER_NETIF    1
+#define CHECKSUM_GEN_IP                 1
+#define CHECKSUM_GEN_UDP                1
+#define CHECKSUM_GEN_TCP                1
+#define CHECKSUM_GEN_ICMP               1
+#define CHECKSUM_GEN_ICMP6              1
+#define CHECKSUM_CHECK_IP               1
+#define CHECKSUM_CHECK_UDP              1
+#define CHECKSUM_CHECK_TCP              1
+#define CHECKSUM_CHECK_ICMP             1
+#define CHECKSUM_CHECK_ICMP6            1
+#define LWIP_CHECKSUM_ON_COPY           0
+
 #ifdef LWIP_OPTTEST_FILE
 #include "lwipopts_test.h"
 #else /* LWIP_OPTTEST_FILE */
