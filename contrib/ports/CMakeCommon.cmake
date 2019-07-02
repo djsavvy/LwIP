@@ -39,12 +39,12 @@ if(EXISTS ${LWIP_MBEDTLSDIR}/CMakeLists.txt)
 endif()
 
 set(LWIP_COMPILER_FLAGS_GNU_CLANG
-    $<$<CONFIG:Debug>:-O0>
+    $<$<CONFIG:Debug>:-O3>
     $<$<CONFIG:Debug>:-g3>
     $<$<CONFIG:Release>:-O3>
     -Wall
     -pedantic
-    -Werror
+    #[[ -Werror ]]
     -Wparentheses
     -Wsequence-point
     -Wswitch-default
