@@ -65,6 +65,13 @@ u16_t lwip_standard_chksum(const void *dataptr, int len);
 # define LWIP_CHKSUM_ALGORITHM 0
 #endif
 
+uint16_t pico_checksum(const void *inbuf, uint32_t len);
+uint16_t pico_dualbuffer_checksum(const void *b1, uint32_t len1, const void *b2, uint32_t len2);
+uint16_t pico_checksum_adder(uint32_t sum, const void *data, uint32_t len);
+uint16_t pico_checksum_finalize(uint32_t sum);
+
+
+
 #if (LWIP_CHKSUM_ALGORITHM == 1) /* Version #1 */
 /**
  * lwip checksum
@@ -606,3 +613,66 @@ lwip_chksum_copy(void *dst, const void *src, u16_t len)
   return LWIP_CHKSUM(dst, len);
 }
 #endif /* (LWIP_CHKSUM_COPY_ALGORITHM == 1) */
+
+
+
+#if (LWIP_CHKSUM_ALGORITHM == 4) /* PicoTCP Checksum algorithm */
+
+u16_t lwip_standard_chksum(const void* dataptr, int len) {
+    return pico_checksum(dataptr, len);
+}
+
+
+
+u16_t pico_checksum_adder(uint32_t sum, const void *data, uint32_t len)
+{
+    const uint16_t *buf = (const uint16_t *)data;
+    const uint16_t *stop;
+
+    if (len & 0x01) {
+        --len;
+#ifdef PICO_BIGENDIAN
+        sum += (((uint8_t *)data)[len]) << 8;
+#else
+        sum += ((const uint8_t *)data)[len];
+#endif
+    }
+
+    stop = (const uint16_t *)(((const uint8_t *)data) + len);
+
+    while (buf < stop) {
+        sum += *buf++;
+    }
+    return sum;
+}
+
+u16_t pico_checksum_finalize(uint32_t sum)
+{
+    while (sum >> 16) { /* a second carry is possible! */
+        sum = (sum & 0x0000FFFF) + (sum >> 16);
+    }
+    return ((uint16_t) ~sum);
+}
+
+/**
+ * Calculate checksum of a given string
+ */
+u16_t pico_checksum(const void *inbuf, uint32_t len)
+{
+    uint32_t sum;
+
+    sum = pico_checksum_adder(0, inbuf, len);
+    return pico_checksum_finalize(sum);
+}
+
+/* WARNING: len1 MUST be an EVEN number */
+u16_t pico_dualbuffer_checksum(const void *inbuf1, uint32_t len1, const void *inbuf2, uint32_t len2)
+{
+    uint32_t sum;
+
+    sum = pico_checksum_adder(0, inbuf1, len1);
+    sum = pico_checksum_adder(sum, inbuf2, len2);
+    return pico_checksum_finalize(sum);
+}
+
+#endif /* PicoTCP Checksum algorithm */
