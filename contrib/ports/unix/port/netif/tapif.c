@@ -185,6 +185,22 @@ low_level_init(struct netif *netif)
 #endif /* NETMASK_ARGS */
              );
 
+    printf("\nIFCONFIG call: ");
+    printf(IFCONFIG_BIN IFCONFIG_ARGS,
+             ip4_addr1(netif_ip4_gw(netif)),
+             ip4_addr2(netif_ip4_gw(netif)),
+             ip4_addr3(netif_ip4_gw(netif)),
+             ip4_addr4(netif_ip4_gw(netif))
+#ifdef NETMASK_ARGS
+             ,
+             ip4_addr1(netif_ip4_netmask(netif)),
+             ip4_addr2(netif_ip4_netmask(netif)),
+             ip4_addr3(netif_ip4_netmask(netif)),
+             ip4_addr4(netif_ip4_netmask(netif))
+#endif /* NETMASK_ARGS */
+             );
+   printf("\n\n"); 
+
     LWIP_DEBUGF(TAPIF_DEBUG, ("tapif_init: system(\"%s\");\n", buf));
     ret = system(buf);
     if (ret < 0) {
