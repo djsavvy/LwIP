@@ -127,7 +127,7 @@ PACK_STRUCT_END
 #endif
 /* There must be sufficient timeouts, taking into account requirements of the subsystems. */
 #if LWIP_TIMERS && (MEMP_NUM_SYS_TIMEOUT < LWIP_NUM_SYS_TIMEOUT_INTERNAL)
-#error "MEMP_NUM_SYS_TIMEOUT is too low to accomodate all required timeouts"
+#error "MEMP_NUM_SYS_TIMEOUT is too low to accommodate all required timeouts"
 #endif
 #if (IP_REASSEMBLY && (MEMP_NUM_REASSDATA > IP_REASS_MAX_PBUFS))
 #error "MEMP_NUM_REASSDATA > IP_REASS_MAX_PBUFS doesn't make sense since each struct ip_reassdata must hold 2 pbufs at least!"
@@ -237,8 +237,9 @@ PACK_STRUCT_END
 #error "NETCONN_MORE != TCP_WRITE_FLAG_MORE"
 #endif
 #endif /* LWIP_NETCONN && LWIP_TCP */
-#if LWIP_SOCKET
-#endif /* LWIP_SOCKET */
+#if LWIP_NETCONN_FULLDUPLEX && !LWIP_NETCONN_SEM_PER_THREAD
+#error "For LWIP_NETCONN_FULLDUPLEX to work, LWIP_NETCONN_SEM_PER_THREAD is required"
+#endif
 
 
 /* Compile-time checks for deprecated options.

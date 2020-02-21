@@ -342,8 +342,8 @@ netif_add(struct netif *netif,
 #endif /* LWIP_NUM_NETIF_CLIENT_DATA */
 #if LWIP_IPV6
 #if LWIP_IPV6_AUTOCONFIG
-  /* IPv6 address autoconfiguration not enabled by default */
-  netif->ip6_autoconfig_enabled = 0;
+  /* IPv6 address autoconfiguration should be enabled by default */
+  netif->ip6_autoconfig_enabled = 1;
 #endif /* LWIP_IPV6_AUTOCONFIG */
   nd6_restart_netif(netif);
 #endif /* LWIP_IPV6 */
@@ -369,6 +369,9 @@ netif_add(struct netif *netif,
   netif->num = netif_num;
   netif->input = input;
 
+#if LWIP_ACD
+  netif->acd_list = NULL;
+#endif /* LWIP_ACD */
   NETIF_RESET_HINTS(netif);
 #if ENABLE_LOOPBACK && LWIP_LOOPBACK_MAX_PBUFS
   netif->loop_cnt_current = 0;
@@ -736,6 +739,12 @@ netif_set_addr(struct netif *netif, const ip4_addr_t *ipaddr, const ip4_addr_t *
 #if LWIP_NETIF_EXT_STATUS_CALLBACK
   if (change_reason != LWIP_NSC_NONE) {
     change_reason |= LWIP_NSC_IPV4_SETTINGS_CHANGED;
+  }
+  if (!remove) {
+    /* Issue a callback even if the address hasn't changed, eg. DHCP reboot */
+    change_reason |= LWIP_NSC_IPV4_ADDR_VALID;
+  }
+  if (change_reason != LWIP_NSC_NONE) {
     netif_invoke_ext_callback(netif, change_reason, &cb_args);
   }
 #endif
@@ -1741,6 +1750,10 @@ netif_find(const char *name)
   }
 
   num = (u8_t)atoi(&name[2]);
+  if (!num && (name[2] != '0')) {
+    /* this means atoi has failed */
+    return NULL;
+  }
 
   NETIF_FOREACH(netif) {
     if (num == netif->num &&

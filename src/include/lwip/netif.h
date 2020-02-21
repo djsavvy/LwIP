@@ -404,8 +404,10 @@ struct netif {
 #if LWIP_CHECKSUM_CTRL_PER_NETIF
 #define NETIF_SET_CHECKSUM_CTRL(netif, chksumflags) do { \
   (netif)->chksum_flags = chksumflags; } while(0)
-#define IF__NETIF_CHECKSUM_ENABLED(netif, chksumflag) if (((netif) == NULL) || (((netif)->chksum_flags & (chksumflag)) != 0))
+#define NETIF_CHECKSUM_ENABLED(netif, chksumflag) (((netif) == NULL) || (((netif)->chksum_flags & (chksumflag)) != 0))
+#define IF__NETIF_CHECKSUM_ENABLED(netif, chksumflag) if NETIF_CHECKSUM_ENABLED(netif, chksumflag)
 #else /* LWIP_CHECKSUM_CTRL_PER_NETIF */
+#define NETIF_CHECKSUM_ENABLED(netif, chksumflag) 0
 #define NETIF_SET_CHECKSUM_CTRL(netif, chksumflags)
 #define IF__NETIF_CHECKSUM_ENABLED(netif, chksumflag)
 #endif /* LWIP_CHECKSUM_CTRL_PER_NETIF */
@@ -599,6 +601,8 @@ typedef u16_t netif_nsc_reason_t;
 #define LWIP_NSC_IPV6_SET                 0x0100
 /** IPv6 address state has changed */
 #define LWIP_NSC_IPV6_ADDR_STATE_CHANGED  0x0200
+/** IPv4 settings: valid address set, application may start to communicate */
+#define LWIP_NSC_IPV4_ADDR_VALID          0x0400
 
 /** @ingroup netif
  * Argument supplied to netif_ext_callback_fn.
